@@ -1,0 +1,3199 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#f8fafc">
+    <title>CRM-NRE - نظام إدارة العملاء نور للتسويق العقاري</title>
+    
+        <script src="app.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+    :root {
+    --primary: #6366f1;
+    --primary-light: #818cf8;
+    --primary-dark: #4f46e5;
+    --secondary: #f1f5f9;
+    --accent: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #06b6d4;
+    --white: #ffffff;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --gray-900: #0f172a;
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --border-radius: 12px;
+    --transition: all 0.3s ease;
+}
+
+body.dark {
+    --white: #0f172a;
+    --gray-50: #1e293b;
+    --gray-100: #334155;
+    --gray-200: #475569;
+    --gray-300: #64748b;
+    --gray-400: #94a3b8;
+    --gray-500: #cbd5e1;
+    --gray-600: #e2e8f0;
+    --gray-700: #f1f5f9;
+    --gray-800: #f8fafc;
+    --gray-900: #ffffff;
+    --secondary: #1e293b;
+    
+    /* هذا السطر مهم جدًا لتغيير الخلفية الأساسية */
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+/* ... أكمل باقي أكواد الـ CSS الخاصة بك من بعد هذا الجزء ... */
+
+/* --- ألوان أزرار جديدة لإجراءات الملف الشخصي --- */
+
+.btn-add {
+    background: linear-gradient(135deg, #28a745 0%, #218838 100%); /* أخضر */
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.btn-viewing {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); /* سماوي / أزرق المعلومات */
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+}
+
+.btn-call {
+    background: linear-gradient(135deg, #0077B6 0%, #0096C7 100%); /* أزرق قوي */
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(0, 119, 182, 0.3);
+}
+
+.btn-whatsapp {
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); /* أخضر واتساب */
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+/* تعديل إضافي لتحسين شكل الأزرار الثانوية في الوضع الداكن */
+body.dark .btn-secondary {
+    background: var(--gray-100);
+    color: var(--gray-800);
+    border-color: var(--gray-200);
+}
+
+body.dark .btn-secondary:hover {
+    background: var(--gray-200);
+}
+/* ... إلخ ... */
+
+body {
+    font-family: 'Cairo', sans-serif;
+    /* هذا التدرج اللوني سيملأ الشاشة بالكامل بما في ذلك منطقة شريط الإشعارات */
+    background-color: rgb(255, 255, 255); /* <--- قم بالتعديل هنا */
+    min-height: 100vh;
+    direction: rtl;
+    overflow-x: hidden;
+    width: 100vw;
+    max-width: 100vw;
+    color: var(--gray-800);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+        .header {
+            background: var(--white);
+            padding: 16px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+            height: 70px;
+            width: 100vw;
+            max-width: 100vw;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 100%;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-btn {
+            width: 45px;
+            height: 45px;
+            background: var(--gray-50);
+            border: none;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--gray-600);
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .header-btn:hover {
+            background: var(--gray-100);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            background: var(--danger);
+            color: var(--white);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.65rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            border: 2px solid var(--white);
+        }
+
+        .menu-btn {
+            width: 45px;
+            height: 45px;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .menu-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Sidebar */
+.sidebar {
+    position: fixed;
+    /* يضمن أن القائمة تبدأ من أسفل الهيدر مباشرة */
+    top: calc(60px + env(safe-area-inset-top));
+    right: -100%;
+    width: 235px;
+    /* يضمن أن ارتفاع القائمة يملأ باقي الشاشة */
+    height: calc(100vh - 70px - env(safe-area-inset-top));
+    background: var(--white);
+    padding: 20px 0;
+    overflow-y: auto;
+    z-index: 999;
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition);
+    max-width: 85vw;
+}
+
+        .sidebar.show {
+            right: 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 16px;
+        }
+
+        .sidebar-item {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            color: var(--gray-600);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            font-weight: 500;
+            font-size: 0.9rem;
+            min-height: 50px;
+        }
+
+        .sidebar-link:hover {
+            background: var(--gray-50);
+            color: var(--primary);
+            transform: translateX(-3px);
+        }
+
+        .sidebar-link.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .sidebar-icon {
+            font-size: 1.2rem;
+            width: 22px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .sidebar-footer {
+    position: absolute;
+    bottom: 35px; /* لتثبيته في الأسفل مع ترك مسافة */
+    left: 0;
+    right: 0;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.8rem; /* خط أصغر درجة */
+    color: var(--gray-500); /* لون رمادي خفيف */
+}
+
+.sidebar-footer a {
+    color: var(--primary-light); /* لون مميز للينك */
+    text-decoration: none;
+    font-weight: 600;
+}
+
+        /* Main Content */
+.main-content {
+    margin-top: 55px;
+    padding: 19px 15px;
+    /* أضف هذا السطر ليتم تحديد مساحة المحتوى من بعد شريط الإشعارات */
+    padding-top: calc(24px + env(safe-area-inset-top)); 
+    min-height: calc(100vh - 70px);
+    width: 100vw;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+
+        .section-subtitle {
+            color: var(--gray-500);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-100);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .stat-card.accent::before { background: var(--accent); }
+        .stat-card.warning::before { background: var(--warning); }
+        .stat-card.info::before { background: var(--info); }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: var(--white);
+            flex-shrink: 0;
+        }
+
+        .stat-icon.primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); }
+        .stat-icon.accent { background: linear-gradient(135deg, var(--accent) 0%, #059669 100%); }
+        .stat-icon.warning { background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%); }
+        .stat-icon.info { background: linear-gradient(135deg, var(--info) 0%, #0891b2 100%); }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: var(--gray-600);
+            font-weight: 500;
+            font-size: 0.8rem;
+            line-height: 1.2;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 19px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-100);
+            width: 100%;
+            max-width: 100%;
+            margin-bottom: 20px;
+        }
+
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 0;   /* <--- تم التعديل هنا */
+    flex-wrap: wrap;
+    gap: 16px;
+    min-height: 44px;
+}
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            flex: 1;
+            min-width: 0;
+            line-height: 1.4;
+            padding-top: 2px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+            margin-top: 0;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            min-height: 42px;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent) 0%, #059669 100%);
+            color: var(--white);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: var(--white);
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 0.75rem;
+            min-height: 36px;
+            min-width: 36px;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            width: 100%;
+        }
+
+        .form-label {
+            display: block;
+            color: var(--gray-700);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .form-label .required {
+            color: #ef4444; /* اللون الأحمر */
+            font-weight: bold;
+            margin-right: 3px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--gray-900);
+            background: var(--white);
+            transition: var(--transition);
+            min-height: 46px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .form-select {
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23666" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: left 12px center;
+            background-size: 12px;
+            padding-left: 40px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* =========================
+   Custom styled selects UI
+   ========================= */
+select.form-select { display: none; /* نخفي الـ select الأصلي، مع الحفاظ عليه في الـ DOM */ }
+
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+  user-select: none;
+  margin-top: 6px;
+}
+
+.custom-select-wrapper .select-trigger {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--gray-200);
+  border-radius: 10px;
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.custom-select-wrapper .select-trigger:hover {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(99,102,241,0.06);
+}
+
+.custom-select-wrapper .select-trigger span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-select-wrapper .select-options {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  left: 0;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  z-index: 1200;
+  display: none;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.custom-select-wrapper.open .select-options { display: block; }
+
+.custom-select-wrapper .select-option {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.95rem;
+}
+
+.custom-select-wrapper .select-option:hover {
+  background: var(--gray-100);
+  color: var(--primary);
+}
+
+.custom-select-wrapper .select-option.selected {
+  background: linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);
+  color: white;
+  font-weight: 700;
+}
+
+/* اجعل الـ wrapper مناسبًا للموبايل: */
+@media (max-width: 480px) {
+  .custom-select-wrapper .select-trigger { padding: 12px; font-size: 14px; }
+  .custom-select-wrapper .select-option { padding: 12px; font-size: 14px; }
+}
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        /* Mobile Table */
+        .mobile-table {
+            display: block;
+        }
+
+        .mobile-table-item {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--border-radius);
+            padding: 12px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .mobile-table-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .mobile-table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .mobile-table-name {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-size: 1rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .mobile-table-type {
+            background: var(--primary);
+            color: var(--white);
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .mobile-table-details {
+            margin-bottom: 12px;
+        }
+
+        .mobile-table-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            align-items: flex-start;
+        }
+
+        .mobile-table-label {
+            color: var(--gray-600);
+            font-weight: 500;
+            flex-shrink: 0;
+            margin-left: 12px;
+        }
+
+        .mobile-table-value {
+            color: var(--gray-900);
+            text-align: left;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .mobile-table-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+        }
+.followup-type-badge {
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.followup-type-viewing { background-color: #cffafe; color: #0891b2; } /* سماوي */
+.followup-type-call { background-color: #dcfce7; color: #166534; } /* أخضر */
+.followup-type-meeting { background-color: #fef3c7; color: #b45309; } /* أصفر */
+.followup-type-whatsapp { background-color: #e0e7ff; color: #4338ca; } /* بنفسجي */
+
+        .status-interested { background: #dbeafe; color: #1d4ed8; }
+        .status-serious { background: #dcfce7; color: #166534; }
+        .status-not-interested { background: #fee2e2; color: #dc2626; }
+        .status-pending { background: #fef3c7; color: #d97706; }
+        .status-booked { background: #e0e7ff; color: #3730a3; }
+        .status-paid { background: #d1fae5; color: #065f46; }
+
+        /* Featured Client Badge */
+        .featured-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: var(--white);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+            z-index: 10;
+        }
+
+        .mobile-table-item.featured {
+            border: 2px solid #f59e0b;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+        }
+
+        .mobile-table-item.featured::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+        }
+
+        /* Enhanced Client Profile Styles */
+.profile-details-grid {
+    display: grid;
+    /* التعديل: فرض وجود عمودين على الموبايل */
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+    /* على الشاشات الكبيرة، استخدم التخطيط التلقائي الأصلي */
+    .profile-details-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+}
+
+.detail-badge {
+    background: var(--gray-50);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: var(--gray-700);
+    border: 1px solid var(--gray-100);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-height: 85px;
+}
+
+.detail-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.badge-icon {
+    font-size: 1.2rem;
+    color: var(--primary);
+}
+
+.badge-label {
+    font-weight: 500;
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.profile-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: var(--white);
+    padding: 16px 20px; /* تم تقليل الـ padding */
+    border-radius: var(--border-radius);
+    margin-bottom: 20px; /* تم تقليل الـ margin */
+    position: relative;
+    overflow: hidden;
+}
+
+/* --- أكواد الكارت الترحيبي الجديد --- */
+
+.dashboard-header-card {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: var(--white);
+    padding: 16px 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.welcome-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    opacity: 0.9;
+}
+
+.welcome-subtitle {
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.welcome-date {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    opacity: 0.95;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,0,0,0.1);
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: inline-flex; /* لجعل الخلفية تلتف حول المحتوى */
+}
+
+.welcome-logo-container img {
+    width: 60px; /* للتحكم في عرض اللوجو */
+    height: 60px; /* للتحكم في ارتفاع اللوجو */
+    object-fit: contain; /* للحفاظ على أبعاد الصورة */
+    border-radius: 10px;
+}
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="80" cy="20" r="20" fill="rgba(255,255,255,0.1)"/><circle cx="20" cy="80" r="15" fill="rgba(255,255,255,0.05)"/><circle cx="90" cy="70" r="10" fill="rgba(255,255,255,0.08)"/></svg>');
+            pointer-events: none;
+        }
+
+.profile-avatar {
+    width: 60px; /* تم تصغير الحجم */
+    height: 60px; /* تم تصغير الحجم */
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem; /* تم تصغير الأيقونة */
+    margin-bottom: 12px; /* تم تقليل المسافة */
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    z-index: 2;
+}
+
+.profile-name {
+    font-size: 1.3rem; /* تم تصغير حجم الخط */
+    font-weight: 700;
+    margin-bottom: 6px; /* تم تقليل المسافة */
+    position: relative;
+    z-index: 2;
+}
+
+.profile-type {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 14px; /* تم تقليل الـ padding */
+    border-radius: 20px;
+    font-size: 0.8rem; /* تم تصغير حجم الخط */
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 12px; /* تم تقليل المسافة */
+    position: relative;
+    z-index: 2;
+}
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .profile-stat {
+            text-align: center;
+        }
+
+        .profile-stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .profile-stat-label {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+.profile-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 0; /* <--- تم التعديل هنا */
+}
+
+        @media (min-width: 768px) {
+            .profile-actions-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .profile-info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+.profile-info-item {
+    background: var(--gray-50);
+    padding: 16px;
+    border-radius: 10px;
+    border-left: 4px solid var(--accent); /* تم التعديل هنا ليصبح أخضر */
+}
+
+        .profile-info-label {
+            font-size: 0.75rem;
+            color: var(--gray-600);
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-info-value {
+            font-size: 0.9rem;
+            color: var(--gray-900);
+            font-weight: 500;
+        }
+
+        .followup-timeline {
+            position: relative;
+            padding-left: 24px;
+        }
+
+        .followup-timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--gray-200);
+        }
+
+        .followup-timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-100);
+        }
+
+        .followup-timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            border: 3px solid var(--white);
+            box-shadow: 0 0 0 2px var(--gray-200);
+        }
+
+        .followup-timeline-item.viewing::before {
+            background: var(--info);
+        }
+
+        .followup-timeline-item.call::before {
+            background: var(--accent);
+        }
+
+        .followup-timeline-item.meeting::before {
+            background: var(--warning);
+        }
+
+        /* Phone Input Groups */
+        .phone-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .phone-input-group input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .phone-input-group button {
+            flex-shrink: 0;
+        }
+
+        /* Filters */
+        .filters-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters-container select {
+            flex: 1;
+            min-width: 140px;
+            font-size: 0.85rem;
+            padding: 12px 14px;
+            min-height: 42px;
+        }
+
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: 20px 20px 0 0;
+            padding: 24px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: var(--transition);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .modal-close {
+            background: var(--gray-100);
+            border: none;
+            font-size: 1.2rem;
+            color: var(--gray-500);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: var(--transition);
+            min-width: 36px;
+            min-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: var(--gray-700);
+            background: var(--gray-200);
+        }
+
+        /* Notifications Panel */
+        .notifications-panel {
+            position: fixed;
+            top: 70px;
+            left: 16px;
+            right: auto;
+            width: calc(100vw - 32px);
+            max-width: 380px;
+            max-height: 65vh;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+            z-index: 1001;
+            transform: translateY(-10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .notifications-panel.show {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .notifications-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            font-weight: 600;
+            color: var(--gray-800);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .notifications-list {
+            max-height: calc(65vh - 60px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .notification-item {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-100);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: var(--gray-50);
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        .notification-content {
+            display: flex;
+            gap: 12px;
+        }
+
+        .notification-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: var(--white);
+            flex-shrink: 0;
+        }
+
+        .notification-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: var(--gray-800);
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+        }
+
+        .notification-desc {
+            color: var(--gray-600);
+            font-size: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            color: var(--gray-400);
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 16px;
+            right: 16px;
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 16px 20px;
+            box-shadow: var(--shadow-lg);
+            z-index: 2001;
+            transform: translateY(-100%);
+            opacity: 0;
+            transition: var(--transition);
+            border-left: 4px solid var(--accent);
+            border: 1px solid var(--gray-200);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.warning {
+            border-left-color: var(--warning);
+        }
+
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast-icon {
+            font-size: 1.1rem;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .toast.error .toast-icon {
+            color: var(--danger);
+        }
+
+        .toast.warning .toast-icon {
+            color: var(--warning);
+        }
+
+        .toast-message {
+            color: var(--gray-900);
+            font-weight: 500;
+            flex: 1;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            color: var(--gray-500);
+            padding: 40px 20px;
+            font-size: 0.85rem;
+        }
+
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 12px;
+            color: var(--gray-400);
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Touch Optimizations */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        input, textarea, select {
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            user-select: text;
+        }
+
+        .btn, .sidebar-link, .header-btn, .mobile-table-item {
+            -webkit-tap-highlight-color: rgba(99, 102, 241, 0.1);
+            touch-action: manipulation;
+        }
+
+        /* Scrollbar */
+        .notifications-list::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar,
+        .modal-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .notifications-list::-webkit-scrollbar-track,
+        .sidebar::-webkit-scrollbar-track,
+        .modal-content::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 2px;
+        }
+
+        .notifications-list::-webkit-scrollbar-thumb,
+        .sidebar::-webkit-scrollbar-thumb,
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 2px;
+        }
+
+        /* Prevent horizontal scroll */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .header, .main-content, .sidebar, .modal, .toast, .notifications-panel {
+            max-width: 100vw;
+        }
+
+        /* Responsive */
+        @media (min-width: 768px) {
+            body {
+                font-size: 15px;
+            }
+
+            .header {
+                padding: 20px 24px;
+                height: 80px;
+            }
+
+            .logo-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
+            }
+
+            .header-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+
+.sidebar {
+    right: 0;
+    position: fixed;
+    width: 235px; /* قمنا بتغيير العرض من 300 إلى 240 */
+    top: 80px;
+    height: calc(100vh - 80px);
+    padding: 28px 0;
+}
+
+.main-content {
+    margin-right: 240px; 
+    margin-top: 80px;
+    padding: 32px;
+    /* هذا هو السطر المهم الذي يجب إضافته: */
+    width: calc(100% - 240px);
+}
+
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 24px;
+                margin-bottom: 32px;
+            }
+
+            .form-grid {
+                grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+                gap: 24px;
+            }
+
+            .modal {
+                align-items: center;
+            }
+
+            .modal-content {
+                border-radius: var(--border-radius);
+                max-width: 550px;
+                width: 90%;
+                max-height: 80vh;
+                transform: scale(0.9);
+            }
+
+            .modal.show .modal-content {
+                transform: scale(1);
+            }
+
+            .notifications-panel {
+                left: 24px;
+                right: auto;
+                width: 400px;
+                top: 90px;
+            }
+
+            .toast {
+                right: 24px;
+                left: auto;
+                top: 90px;
+                min-width: 350px;
+            }
+            /* ✅ START: New Follow-up Timeline Styles */
+.followup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.followup-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-grow: 1;
+}
+
+.followup-date-time {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--gray-800);
+}
+
+.followup-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0; /* Prevents buttons from shrinking */
+}
+
+.followup-details {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    line-height: 1.5;
+    padding-top: 12px;
+    border-top: 1px solid var(--gray-100);
+    margin-top: 12px;
+}
+
+.followup-details strong {
+    color: var(--gray-700);
+}
+/* ✅ END: New Follow-up Timeline Styles */
+        }
+        
+        /* --- Multi-Select & FAB Styles --- */
+.mobile-table-item.selected {
+    border-color: var(--primary);
+    background-color: #f0f1ff; /* لون أزرق سماوي خفيف */
+    box-shadow: 0 0 0 2px var(--primary);
+    transform: scale(0.98);
+}
+
+body.dark .mobile-table-item.selected {
+    background-color: #2a2c57; /* لون أزرق داكن خفيف */
+}
+
+/* --- Contextual Action Bar Styles (النسخة النهائية) --- */
+.contextual-action-bar {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--white);
+    box-shadow: var(--shadow-md);
+    z-index: 1010;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+
+    /* ✅ التعديل الأهم: إخفاء الشريط بقوة */
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none; /* لمنع التفاعل معه وهو مخفي */
+
+    /* الإبقاء على هذه الخصائص كما هي */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.contextual-action-bar.show {
+    /* ✅ إظهار الشريط بقوة */
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.action-bar-group {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.action-bar-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--gray-600);
+    cursor: pointer;
+    padding: 8px;
+}
+
+#multiSelectCount {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* أضف هذه الأكواد في نهاية قسم <style> */
+
+.notifications-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* هذا السطر يضع كل عنصر في جهة */
+}
+
+.notifications-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* مسافة بين الأيقونة والنص */
+}
+
+.clear-all-btn {
+    background: none;
+    border: none;
+    color: var(--danger); /* لون أحمر للخطر */
+    font-family: inherit; /* استخدام نفس خط التطبيق */
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+.clear-all-btn:hover {
+    background-color: #fee2e2; /* لون أحمر خفيف عند مرور الماوس */
+}
+
+body.dark .clear-all-btn:hover {
+    background-color: rgba(239, 68, 68, 0.1); /* لون أحمر خفيف للوضع الداكن */
+}
+
+/* Calendar Styles */
+#calendar-container {
+    padding: 16px;
+    font-family: 'Cairo', sans-serif;
+}
+.calendar-header {
+    text-align: center;
+    margin-bottom: 16px;
+}
+.calendar-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--gray-900);
+}
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    text-align: center;
+}
+.calendar-day {
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-weight: 500;
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.calendar-day:hover {
+    background-color: var(--gray-100);
+}
+.calendar-day.today {
+    background-color: var(--primary);
+    color: var(--white);
+    font-weight: 700;
+}
+
+/* Calendar Controls */
+.calendar-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.calendar-controls .calendar-title {
+    margin: 0;
+}
+
+.section-title i {
+    color: var(--primary); /* لون الأيقونة */
+    margin-left: 8px;      /* مسافة بين الأيقونة والنص */
+    font-size: 1.4rem;     /* حجم الأيقونة */
+}
+
+/* تنسيق العنوان الرئيسي */
+.section-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;              /* مسافة بين العنوان والوصف */
+    margin-bottom: 24px;   /* مسافة أسفل العنوان */
+    padding: 10px 20px;
+    background: var(--gray-50); /* خلفية خفيفة */
+    border-radius: var(--border-radius);
+    border: 1px solid var(--gray-100);
+}
+
+/* تنسيق نص العنوان نفسه */
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    display: flex;         /* لتجميع الأيقونة والنص في سطر واحد */
+    align-items: center;
+}
+
+.header {
+    background: var(--white);
+    padding: 16px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
+    height: 70px;
+    width: 100vw;
+    max-width: 100vw;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Enhanced Logo Styles */
+.logo-text {
+    font-size: 1.4rem; /* الحجم الافتراضي للأجهزة الأكبر */
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark), #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(99, 102, 241, 0.1);
+    position: relative;
+}
+
+.logo-text::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), transparent);
+    border-radius: 1px;
+}
+
+/* التعديل: استخدم هذا الجزء فقط لتغيير الحجم على الأجهزة الصغيرة */
+@media (max-width: 768px) {
+    .logo-text {
+        font-size: 1.2rem;
+    }
+}
+
+/* هذا هو الكود الصحيح والمعدل الذي يحل المشكلة ويزيل التكرار */
+/* يمكنك إضافة هذا الكود مكان جميع التعريفات المكررة لـ .logo-subtitle */
+
+.logo-subtitle {
+    font-size: 0.75rem; /* الحجم الافتراضي للأجهزة الأكبر */
+    color: var(--gray-600);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+    background: linear-gradient(135deg, var(--gray-600), var(--gray-500));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* التعديل: استخدم هذا الجزء فقط لتغيير الحجم على الأجهزة الصغيرة */
+@media (max-width: 768px) {
+    .logo-subtitle {
+        font-size: 0.7rem;
+    }
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+}
+
+/* Enhanced Button Styles */
+.header-btn {
+    width: 45px;
+    height: 45px;
+    background: var(--gray-50);
+    border: 2px solid transparent;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--gray-600);
+    font-size: 1.1rem;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.header-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
+}
+
+.header-btn:hover::before {
+    left: 100%;
+}
+
+.header-btn:hover {
+    background: linear-gradient(135deg, var(--gray-100), var(--gray-50));
+    color: var(--primary);
+    transform: translateY(-3px) scale(1.05);
+    border-color: var(--primary-light);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.15);
+}
+
+.header-btn:active {
+    transform: translateY(-1px) scale(1.02);
+    transition: all 0.1s;
+}
+
+/* Updated Notification Badge - Outside Button */
+.notification-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: linear-gradient(135deg, var(--danger), #dc2626);
+    color: var(--white);
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    border: 3px solid var(--white);
+    box-shadow: 0 3px 12px rgba(239, 68, 68, 0.4);
+    animation: pulse 2s infinite;
+    z-index: 10;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Enhanced Menu Button */
+.menu-btn {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: var(--white);
+    border: 2px solid transparent;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+    overflow: hidden;
+}
+
+.menu-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.menu-btn:hover::before {
+    left: 100%;
+}
+
+.menu-btn:hover {
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 12px 30px rgba(99, 102, 241, 0.4);
+    border-color: var(--primary-light);
+}
+
+.menu-btn:active {
+    transform: translateY(-2px) scale(1.05);
+    transition: all 0.1s;
+}
+
+.menu-btn i {
+    transition: transform 0.3s ease;
+}
+
+.menu-btn:hover i {
+    transform: rotate(90deg);
+}
+
+/* Ripple Effect */
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0);
+    animation: ripple-animation 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple-animation {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        padding: 12px 16px;
+        height: 65px;
+    }
+    
+    .header-btn, .menu-btn {
+        width: 42px;
+        height: 42px;
+        font-size: 1rem;
+    }
+    
+    .logo-text {
+        font-size: 1.2rem;
+    }
+    
+    .logo-subtitle {
+        font-size: 0.7rem;
+    }
+
+    .notification-badge {
+        width: 20px;
+        height: 20px;
+        font-size: 0.65rem;
+        top: -6px;
+        right: -6px;
+    }
+}
+.profile-name-and-type {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* هذا السطر يوسط العناصر أفقياً */
+}
+
+.profile-name {
+    /* تنسيقات إضافية لاسم العميل */
+    font-weight: bold;
+}
+
+.profile-type {
+    /* تنسيقات إضافية لنوع العميل */
+    font-size: 0.9em;
+    color: #ffffff;
+}
+    </style>
+</head>
+<body>
+    <!-- Header -->
+<header class="header">
+    <div class="header-content">
+        <div class="logo">
+            <button class="menu-btn" id="menuToggle" title="القائمة">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div>
+                <div class="logo-text">CRM-NRE</div>
+                <div class="logo-subtitle">NOOR REAL ESTATE MARKETING</div>
+            </div>
+        </div>
+        
+        <div class="header-actions">
+            <button class="header-btn" id="notificationBtn" title="الإشعارات">
+                <i class="fas fa-bell"></i>
+            </button>
+            <span class="notification-badge" id="notificationBadge">0</span>
+        </div>
+    </div>
+</header>
+
+
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <ul class="sidebar-menu">
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link active" data-section="dashboard">
+                    <i class="fas fa-home sidebar-icon"></i>
+                    <span>الصفحة الرئيسية</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link" data-section="add-client">
+                    <i class="fas fa-user-plus sidebar-icon"></i>
+                    <span>إضافة عميل</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link" data-section="clients">
+                    <i class="fas fa-users sidebar-icon"></i>
+                    <span>عرض العملاء</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link" data-section="operations">
+                    <i class="fas fa-clipboard-list sidebar-icon"></i>
+                    <span>سجل العمليات</span>
+                </a>
+            </li>
+                        <li class="sidebar-item">
+                <a href="#" class="sidebar-link" data-section="profile">
+                    <i class="fas fa-user-cog sidebar-icon"></i>
+                    <span>الملف الشخصي</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#" class="sidebar-link" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt sidebar-icon"></i>
+                    <span>تسجيل الخروج</span>
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+<p style="margin-bottom: 8px;">الإصدار 1.1</p>
+    <p>
+        Developed and designed by
+        <br>
+        <a href="https://wa.me/201111236789" target="_blank">Ahmed M. Fekry</a>
+    </p>
+</div>
+    </nav>
+
+    <!-- Notifications Panel -->
+    <div class="notifications-panel" id="notificationsPanel">
+<div class="notifications-header">
+    <div class="notifications-title-group">
+        <i class="fas fa-bell"></i>
+        <span>الإشعارات والتذكيرات</span>
+    </div>
+    <button class="clear-all-btn" onclick="clearAllNotifications()">مسح الكل</button>
+</div>
+        <div class="notifications-list" id="notificationsList">
+            <!-- Notifications will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <div class="contextual-action-bar" id="multiSelectBar">
+    <div class="action-bar-group">
+        <button class="action-bar-btn" onclick="exitMultiSelectMode()" title="إلغاء التحديد">
+            <i class="fas fa-times"></i>
+        </button>
+        <span id="multiSelectCount">0</span>
+    </div>
+    <div class="action-bar-group">
+        <button class="btn btn-primary btn-sm" onclick="handleBulkShare()">
+            <i class="fas fa-share-alt"></i>
+            مشاركة
+        </button>
+    </div>
+</div>
+
+        <!-- Dashboard Section -->
+         <section class="content-section" id="pending-followups">
+<div class="section-header">
+    <h1 class="section-title"><i class="fas fa-clock"></i> المتابعات القادمة</h1>
+    <div class="section-subtitle">
+        <i class="fas fa-clock"></i>
+        جميع المتابعات المستقبلية (غير المعاينات) مرتبة حسب التاريخ
+    </div>
+</div>
+    <div class="mobile-table" id="pendingFollowupsList">
+        </div>
+</section>
+
+<section class="content-section" id="today-viewings">
+<div class="section-header">
+    <h1 class="section-title"><i class="fas fa-eye"></i> المعاينات القادمة</h1>
+    <div class="section-subtitle">
+        <i class="fas fa-eye"></i>
+        جميع المعاينات المستقبلية مرتبة حسب التاريخ
+    </div>
+</div>
+    <div class="mobile-table" id="todayViewingsList">
+        </div>
+</section>
+
+        <section class="content-section active" id="dashboard">
+<div class="dashboard-header-card">
+    <div class="welcome-text-container">
+        <div class="welcome-title" onclick="switchSection('profile')" style="cursor: pointer;">
+            <span id="welcomeUserName" style="font-weight: 700; display: block;"></span>
+            مرحباً بك في
+        </div>
+        <div class="welcome-subtitle">نظام إدارة العملاء</div>
+        <div class="welcome-date" onclick="showCalendarModal()" style="cursor: pointer;">
+            <i class="fas fa-calendar-alt"></i>
+            <span id="currentDate"></span>
+        </div>
+    </div>
+    <div class="welcome-logo-container">
+        <img src="assets/images/logo.png" alt="Logo">
+    </div>
+</div>
+            <div class="stats-grid">
+<div class="stat-card" onclick="navigateToClients()" style="cursor: pointer;">
+    <div class="stat-header">
+        <div class="stat-icon primary"><i class="fas fa-users"></i></div>
+    </div>
+    <div class="stat-value" id="totalClients">0</div>
+    <div class="stat-label">إجمالي العملاء</div>
+</div>
+
+<div class="stat-card accent" onclick="navigateToClients({status: 'serious'})" style="cursor: pointer;">
+    <div class="stat-header">
+        <div class="stat-icon accent"><i class="fas fa-user-check"></i></div>
+    </div>
+    <div class="stat-value" id="seriousClients">0</div>
+    <div class="stat-label">عملاء جادون</div>
+</div>
+
+<div class="stat-card warning" onclick="switchSection('pending-followups')" style="cursor: pointer;">
+    <div class="stat-header">
+        <div class="stat-icon warning"><i class="fas fa-clock"></i></div>
+    </div>
+    <div class="stat-value" id="pendingFollowups">0</div>
+    <div class="stat-label">متابعات قادمة</div>
+</div>
+
+<div class="stat-card info" onclick="switchSection('today-viewings')" style="cursor: pointer;">
+    <div class="stat-header">
+        <div class="stat-icon info"><i class="fas fa-eye"></i></div>
+    </div>
+    <div class="stat-value" id="todayViewings">0</div>
+    <div class="stat-label">معاينات قادمة</div>
+</div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">العملاء المميزون</h3>
+                    <div class="card-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="switchSection('clients'); currentSearchFilters = {clientType: 'featured', status: 'all', budget: '', location: ''}; renderClientsTable(); updateActiveFiltersDisplay();">
+                            <i class="fas fa-star"></i>
+                            عرض الكل
+                        </button>
+                    </div>
+                </div>
+                <div class="mobile-table" id="recentClientsTable">
+                    <!-- Featured clients will be populated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Add Client Section -->
+<section class="content-section" id="add-client">
+<div class="section-header">
+    <h1 class="section-title"><i class="fas fa-user-plus"></i> إضافة عميل جديد</h1>
+    <div class="section-subtitle">
+        <i class="fas fa-user-plus"></i>
+        أضف بيانات العميل الجديد
+    </div>
+</div>
+
+            <div class="card">
+                <form id="addClientForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">اسم العميل <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="clientName" required placeholder="أدخل اسم العميل">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">نوع العميل <span class="required">*</span></label>
+                            <select class="form-select" id="clientType" required onchange="toggleClientFields()">
+                                <option value="">اختر نوع العميل</option>
+                                <option value="buyer">طالب وحدة</option>
+                                <option value="seller">عارض وحدة</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">أرقام الهاتف <span class="required">*</span></label>
+                        <div id="phoneNumbers">
+                            <div class="phone-input-group">
+                                <input type="tel" class="form-input" placeholder="رقم الهاتف" required value="+20" oninput="formatPhoneInput(this)">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="removePhoneInput(this)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="addPhoneInput()" style="margin-top: 12px; min-width: 36px; padding: 8px;">
+                            <i class="fas fa-plus"></i>
+                            إضافة رقم آخر
+                        </button>
+                    </div>
+
+                    <!-- Buyer Fields -->
+                    <div id="buyerFields" style="display: none;">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">الميزانية <span class="required">*</span></label>
+                                <input type="text" class="form-input" id="buyerBudget" placeholder="الميزانية المتاحة" oninput="formatAndConvertNumberInput(this)">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">المكان المطلوب <span class="required">*</span></label>
+                                <input type="text" class="form-input" id="buyerLocation" placeholder="المنطقة أو الحي المطلوب">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">المساحة المطلوبة <span class="required">*</span></label>
+                                <input type="text" class="form-input" id="buyerArea" placeholder="المساحة بالمتر المربع" oninput="formatAndConvertNumberInput(this)">
+                            </div>
+
+                            <div class="form-group">
+<label class="form-label">الدور <span class="required">*</span></label>
+    <input type="text" class="form-input" id="buyerFloors" placeholder="مثال: الخامس أو أرضي">
+</div>
+
+                            <div class="form-group">
+                                <label class="form-label">نوع الوحدة <span class="required">*</span></label>
+                                <select class="form-select" id="buyerUnitType">
+                                    <option value="">اختر نوع الوحدة</option>
+                                    <option value="apartment">شقة</option>
+                                    <option value="villa">فيلا</option>
+                                    <option value="duplex">دوبلكس</option>
+                                    <option value="penthouse">بنتهاوس</option>
+                                    <option value="studio">استوديو</option>
+                                    <option value="office">مكتب</option>
+                                    <option value="shop">محل تجاري</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seller Fields -->
+<div id="sellerFields" style="display: none;">
+    <div class="form-grid">
+        <div class="form-group">
+            <label class="form-label">موقع الوحدة <span class="required">*</span></label>
+            <input type="text" class="form-input" id="sellerLocation" placeholder="المنطقة والعنوان">
+        </div>
+        <div class="form-group">
+            <label class="form-label">السعر المطلوب <span class="required">*</span></label>
+            <input type="text" class="form-input" id="sellerPrice" placeholder="السعر المطلوب" oninput="formatAndConvertNumberInput(this)">
+        </div>
+        <div class="form-group">
+            <label class="form-label">نسبة الشركة % <span class="required">*</span></label>
+            <input type="number" class="form-input" id="sellerCommission" placeholder="مثال: 2.5" step="0.1">
+        </div>
+        <div class="form-group">
+            <label class="form-label">مساحة الوحدة <span class="required">*</span></label>
+            <input type="text" class="form-input" id="sellerArea" placeholder="المساحة بالمتر المربع" oninput="formatAndConvertNumberInput(this)">
+        </div>
+        <div class="form-group">
+            <label class="form-label">الدور <span class="required">*</span></label>
+            <input type="text" class="form-input" id="sellerFloors" placeholder="مثال: الخامس أو أرضي">
+        </div>
+        <div class="form-group">
+            <label class="form-label">عدد الغرف <span class="required">*</span></label>
+            <input type="number" class="form-input" id="sellerRooms" placeholder="عدد الغرف">
+        </div>
+        <div class="form-group">
+            <label class="form-label">عدد الحمامات <span class="required">*</span></label>
+            <input type="number" class="form-input" id="sellerBathrooms" placeholder="عدد الحمامات">
+        </div>
+        <div class="form-group">
+            <label class="form-label">عدد المطابخ <span class="required">*</span></label>
+            <input type="number" class="form-input" id="sellerKitchens" placeholder="عدد المطابخ">
+        </div>
+        <div class="form-group">
+            <label class="form-label">عدد المصاعد <span class="required">*</span></label>
+            <input type="number" class="form-input" id="sellerElevators" placeholder="عدد المصاعد">
+        </div>
+        <div class="form-group">
+            <label class="form-label">نوع الوحدة <span class="required">*</span></label>
+            <select class="form-select" id="sellerUnitType">
+                <option value="">اختر نوع الوحدة</option>
+                <option value="apartment">شقة</option>
+                <option value="villa">فيلا</option>
+                <option value="duplex">دوبلكس</option>
+                <option value="penthouse">بنتهاوس</option>
+                <option value="studio">استوديو</option>
+                <option value="office">مكتب</option>
+                <option value="shop">محل تجاري</option>
+            </select>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">مرخصة أم لا <span class="required">*</span></label>
+            <select class="form-select" id="sellerLicensed">
+                <option value="">اختر</option>
+                <option value="yes">نعم</option>
+                <option value="no">لا</option>
+            </select>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">العدادات المتوفرة <span class="required">*</span></label>
+            <div class="checkbox-group" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 12px; font-weight: 500; font-size: 0.9rem;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="sellerMeterElectricity" value="كهرباء">
+                    <span>كهرباء</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="sellerMeterWater" value="مياه">
+                    <span>مياه</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="sellerMeterGas" value="غاز">
+                    <span>غاز</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">تفاصيل إضافية</label>
+            <textarea class="form-textarea" id="sellerDetails" placeholder="تفاصيل إضافية عن الوحدة"></textarea>
+        </div>
+    </div>
+</div>
+
+                    <div class="form-group">
+                        <label class="form-label">ملاحظات</label>
+                        <textarea class="form-textarea" id="clientNotes" placeholder="أي ملاحظات إضافية..."></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                            <i class="fas fa-undo"></i>
+                            إعادة تعيين
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            حفظ العميل
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Clients Section -->
+<section class="content-section" id="clients">
+<div class="section-header">
+    <h1 class="section-title"><i class="fas fa-users"></i> عرض العملاء</h1>
+    <div class="section-subtitle">
+        <i class="fas fa-users"></i>
+        إدارة جميع العملاء
+    </div>
+</div>
+
+<div class="filters-container">
+    <div style="display: flex; gap: 12px; width: 100%;">
+        <button class="btn btn-primary" id="searchToggleBtn" onclick="toggleSearchModal()" title="البحث المتقدم">
+            <i class="fas fa-search"></i>
+            بحث متقدم
+        </button>
+        <div class="search-bar-container" style="flex-grow: 1;">
+            <input type="text" class="form-input" id="namePhoneSearchInput" placeholder="ابحث بالاسم أو رقم الهاتف...">
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; width: 100%;">
+        <select class="form-select" id="clientTypeFilter" onchange="applyFilters()" style="flex-grow: 1;">
+            <option value="all">جميع العملاء</option>
+            <option value="buyer">طالبي الوحدات</option>
+            <option value="seller">عارضي الوحدات</option>
+            <option value="featured">العملاء المميزون</option>
+        </select>
+        <select class="form-select" id="statusFilter" onchange="applyFilters()" style="flex-grow: 1;">
+            <option value="all">جميع الحالات</option>
+            <option value="interested">مهتم</option>
+            <option value="serious">جاد</option>
+            <option value="not-interested">غير مهتم</option>
+            <option value="pending">معلق</option>
+            <option value="booked">تم الحجز</option>
+            <option value="paid">تم الدفع</option>
+        </select>
+    </div>
+    
+    <div id="activeFiltersDisplay" style="display: none; flex: 1; background: var(--gray-50); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; color: var(--gray-700);">
+        <span id="activeFiltersText"></span>
+        <button onclick="clearFilters()" style="background: none; border: none; color: var(--danger); margin-right: 8px; cursor: pointer; font-size: 0.75rem;">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+            <div class="mobile-table" id="clientsTable">
+                <!-- Clients will be populated here -->
+            </div>
+        </section>
+
+        <!-- Client Profile Section -->
+        <section class="content-section" id="client-profile">
+<div class="section-header">
+    <h1 class="section-title" id="profileClientName"><i class="fas fa-user"></i> <span>الصفحة الشخصية للعميل</span></h1>
+    <div class="section-subtitle">
+        <i class="fas fa-user"></i>
+        تفاصيل العميل الكاملة
+    </div>
+</div>
+
+            <!-- Enhanced Profile Header -->
+            <div class="profile-header" id="profileHeader">
+                <!-- Profile header content will be populated here -->
+            </div>
+
+            <!-- Profile Actions Card -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">الإجراءات</h3>
+    </div>
+    <div class="profile-actions-grid">
+        <button class="btn btn-call" onclick="callClientFromProfile()" id="profileCallBtn">
+            <i class="fas fa-phone"></i>
+            اتصال مباشر
+        </button>
+        <button class="btn btn-whatsapp" onclick="whatsappClientFromProfile()" id="profileWhatsappBtn">
+            <i class="fab fa-whatsapp"></i>
+            رسالة واتساب
+        </button>
+        <button class="btn btn-add" onclick="addFollowupFromProfile()">
+            <i class="fas fa-plus"></i>
+            إضافة متابعة
+        </button>
+        <button class="btn btn-viewing" onclick="addViewingFromProfile()">
+            <i class="fas fa-eye"></i>
+            حجز معاينة
+        </button>
+        <button class="btn btn-warning" onclick="changeClientStatus()" id="profileStatusBtn">
+            <i class="fas fa-flag"></i>
+            تغيير الحالة
+        </button>
+        <button class="btn btn-primary" onclick="editClientFromProfile()">
+            <i class="fas fa-edit"></i>
+            تعديل البيانات
+        </button>
+        <button class="btn btn-secondary" onclick="handleShareClientFromProfile()">
+    <i class="fas fa-share-alt"></i> مشاركة
+</button>
+<button class="btn btn-secondary" id="addBrokerBtn" onclick="showBrokerModal()">
+    <i class="fas fa-handshake"></i>
+    إضافة تعاون
+</button>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title" style="font-size: 1rem;">
+            <i class="fas fa-lightbulb" style="color: var(--warning);"></i>
+            التحكم بالتذكير العشوائي
+        </h3>
+    </div>
+
+    <div id="reminderControlContainer" style="padding: 0 16px 16px;">
+        </div>
+
+</div>
+
+            <!-- Client Information Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">المعلومات التفصيلية</h3>
+                    <div class="card-actions">
+                        <button class="btn btn-warning btn-sm" id="toggleFeaturedBtn" onclick="toggleFeaturedClient()">
+                            <i class="fas fa-star"></i>
+                            <span id="featuredBtnText">تمييز العميل</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="profile-info-grid" id="profileBasicInfo">
+                    <!-- Basic info will be populated here -->
+                </div>
+            </div>
+
+            <!-- Followups and Viewings Card -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">المتابعات والمعاينات</h3>
+    </div>
+    <div class="followup-timeline" id="profileFollowups">
+        </div>
+</div>
+<div class="card" id="brokerCard" style="display: none; border-left: 4px solid var(--accent);">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-handshake" style="color: var(--accent);"></i>
+            بيانات التعاون مع الوسيط
+        </h3>
+        <div class="card-actions">
+            <button class="btn btn-primary btn-sm" onclick="showBrokerModal()">
+                <i class="fas fa-edit"></i> تعديل
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="handleDeleteBrokerFromProfile()">
+                <i class="fas fa-trash"></i> مسح
+            </button>
+        </div>
+        </div>
+    <div id="brokerInfoContainer">
+        </div>
+</div>
+
+            <!-- Danger Zone Card -->
+            <div class="card" style="border: 2px solid var(--danger); background: #fef2f2;">
+                <div class="card-header">
+                    <h3 class="card-title" style="color: var(--danger);">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        تحذير، هذا إجراء حذف العميل!
+                    </h3>
+                </div>
+                
+                <div style="padding: 16px; background: var(--white); border-radius: 8px;">
+                    <p style="color: var(--gray-600); font-size: 0.9rem; margin-bottom: 0; padding-bottom: 16px; line-height: 1.5;">
+                        حذف العميل سيؤدي إلى فقدان جميع البيانات والمتابعات المرتبطة به نهائياً. هذا الإجراء لا يمكن التراجع عنه.
+                    </p>
+                    <button class="btn btn-danger" onclick="deleteClientFromProfile()">
+                        <i class="fas fa-trash"></i>
+                        حذف العميل نهائياً
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Operations Section -->
+<section class="content-section" id="operations">
+<div class="section-header">
+    <h1 class="section-title"><i class="fas fa-clipboard-list"></i> سجل العمليات</h1>
+    <div class="section-subtitle">
+        <i class="fas fa-clipboard-list"></i>
+        تتبع جميع الأنشطة
+    </div>
+</div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">العمليات الأخيرة</h3>
+                    <div class="card-actions">
+                        <button class="btn btn-danger btn-sm" onclick="clearAllOperations()">
+                            <i class="fas fa-trash-alt"></i>
+                            مسح الكل
+                        </button>
+                    </div>
+                </div>
+                <div class="mobile-table" id="operationsTable">
+                    <!-- Operations will be populated here -->
+                </div>
+            </div>
+        </section>
+<section class="content-section" id="profile">
+<div class="section-header">
+    <h1 class="section-title"><i class="fas fa-user-edit"></i> الملف الشخصي</h1>
+    <div class="section-subtitle">
+        <i class="fas fa-user-edit"></i>
+        إدارة وتعديل بيانات حسابك
+    </div>
+</div>
+
+    <div class="card">
+        <form id="profileUpdateForm">
+            <div class="form-group">
+                <label class="form-label">الاسم الكامل</label>
+                <input type="text" class="form-input" id="profileName" placeholder="أدخل اسمك الجديد" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">البريد الإلكتروني</label>
+                <input type="email" class="form-input" id="profileEmail" placeholder="أدخل بريدك الإلكتروني الجديد" required>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 20px; padding-right: 5px;">
+                اترك حقول كلمة المرور فارغة إذا كنت لا تريد تغييرها.
+            </p>
+
+<div>
+    <div class="form-group">
+        <label class="form-label">كلمة المرور الجديدة</label>
+        <input type="password" class="form-input" id="profilePassword" placeholder="6 أحرف على الأقل">
+    </div>
+    <div class="form-group">
+        <label class="form-label">تأكيد كلمة المرور الجديدة</label>
+        <input type="password" class="form-input" id="profileConfirmPassword" placeholder="أعد إدخال كلمة المرور">
+    </div>
+</div>
+
+            <div class="form-actions" style="justify-content: flex-start;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    حفظ التغييرات
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+    </main>
+
+    <!-- Modals -->
+    <!-- Edit Client Modal -->
+    <div class="modal" id="editClientModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">تعديل بيانات العميل</h3>
+                <button class="modal-close" onclick="closeModal('editClientModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editClientForm">
+                <input type="hidden" id="editClientId">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">اسم العميل <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="editClientName" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">نوع العميل <span class="required">*</span></label>
+                        <select class="form-select" id="editClientType" required onchange="toggleEditClientFields()">
+                            <option value="buyer">طالب وحدة</option>
+                            <option value="seller">عارض وحدة</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">الحالة</label>
+                        <select class="form-select" id="editClientStatus">
+                            <option value="interested">مهتم</option>
+                            <option value="serious">جاد</option>
+                            <option value="not-interested">غير مهتم</option>
+                            <option value="pending">معلق</option>
+                            <option value="booked">تم الحجز</option>
+                            <option value="paid">تم الدفع</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">أرقام الهاتف <span class="required">*</span></label>
+                    <div id="editPhoneNumbers"></div>
+                </div>
+
+                <!-- Buyer Fields -->
+                <div id="editBuyerFields" style="display: none;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">الميزانية <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="editBuyerBudget" placeholder="الميزانية المتاحة" oninput="formatAndConvertNumberInput(this)">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">المكان المطلوب <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="editBuyerLocation" placeholder="المنطقة أو الحي المطلوب">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">المساحة المطلوبة <span class="required">*</span></label>
+                            <input type="text" class="form-input" id="editBuyerArea" placeholder="المساحة بالمتر المربع" oninput="formatAndConvertNumberInput(this)">
+                        </div>
+
+                        <div class="form-group">
+    <label class="form-label">الدور <span class="required">*</span></label>
+    <input type="text" class="form-input" id="editBuyerFloors" placeholder="مثال: الخامس أو أرضي">
+</div>
+
+                        <div class="form-group">
+                            <label class="form-label">نوع الوحدة</label>
+                            <select class="form-select" id="editBuyerUnitType">
+                                <option value="">اختر نوع الوحدة</option>
+                                <option value="apartment">شقة</option>
+                                <option value="villa">فيلا</option>
+                                <option value="duplex">دوبلكس</option>
+                                <option value="penthouse">بنتهاوس</option>
+                                <option value="studio">استوديو</option>
+                                <option value="office">مكتب</option>
+                                <option value="shop">محل تجاري</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seller Fields -->
+<div id="editSellerFields" style="display: none;">
+    <div class="form-grid">
+        <div class="form-group">
+            <label class="form-label">موقع الوحدة <span class="required">*</span></label>
+            <input type="text" class="form-input" id="editSellerLocation" placeholder="المنطقة والعنوان">
+        </div>
+        <div class="form-group">
+            <label class="form-label">السعر المطلوب <span class="required">*</span></label>
+            <input type="text" class="form-input" id="editSellerPrice" placeholder="السعر المطلوب" oninput="formatAndConvertNumberInput(this)">
+        </div>
+        <div class="form-group">
+            <label class="form-label">نسبة الشركة % <span class="required">*</span></label>
+            <input type="number" class="form-input" id="editSellerCommission" placeholder="مثال: 2.5" step="0.1">
+        </div>
+        <div class="form-group">
+            <label class="form-label">مساحة الوحدة <span class="required">*</span></label>
+            <input type="text" class="form-input" id="editSellerArea" placeholder="المساحة بالمتر المربع" oninput="formatAndConvertNumberInput(this)">
+        </div>
+        <div class="form-group">
+            <label class="form-label">الدور <span class="required">*</span></label>
+            <input type="text" class="form-input" id="editSellerFloors" placeholder="مثال: الخامس أو أرضي">
+        </div>
+        <div class="form-group">
+            <label class="form-label">عدد الغرف <span class="required">*</span></label>
+            <input type="number" class="form-input" id="editSellerRooms" placeholder="عدد الغرف">
+        </div>
+        <div class="form-group">
+            <label class="form-label">عدد الحمامات <span class="required">*</span></label>
+            <input type="number" class="form-input" id="editSellerBathrooms" placeholder="عدد الحمامات">
+        </div>
+        <div class="form-group">
+            <label class="form-label">عدد المطابخ <span class="required">*</span></label>
+            <input type="number" class="form-input" id="editSellerKitchens" placeholder="عدد المطابخ">
+        </div>
+        <div class="form-group">
+            <label class="form-label">عدد المصاعد <span class="required">*</span></label>
+            <input type="number" class="form-input" id="editSellerElevators" placeholder="عدد المصاعد">
+        </div>
+        <div class="form-group">
+            <label class="form-label">نوع الوحدة <span class="required">*</span></label>
+            <select class="form-select" id="editSellerUnitType">
+                <option value="">اختر نوع الوحدة</option>
+                <option value="apartment">شقة</option>
+                <option value="villa">فيلا</option>
+                <option value="duplex">دوبلكس</option>
+                <option value="penthouse">بنتهاوس</option>
+                <option value="studio">استوديو</option>
+                <option value="office">مكتب</option>
+                <option value="shop">محل تجاري</option>
+            </select>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">مرخصة أم لا <span class="required">*</span></label>
+            <select class="form-select" id="editSellerLicensed">
+                <option value="">اختر</option>
+                <option value="yes">نعم</option>
+                <option value="no">لا</option>
+            </select>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">العدادات المتوفرة <span class="required">*</span></label>
+            <div class="checkbox-group" style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 12px; font-weight: 500; font-size: 0.9rem;">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="editSellerMeterElectricity" value="كهرباء">
+                    <span>كهرباء</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="editSellerMeterWater" value="مياه">
+                    <span>مياه</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="editSellerMeterGas" value="غاز">
+                    <span>غاز</span>
+                </label>
+            </div>
+        </div>
+        <div class="form-group" style="grid-column: 1 / -1;">
+            <label class="form-label">تفاصيل إضافية</label>
+            <textarea class="form-textarea" id="editSellerDetails" placeholder="تفاصيل إضافية عن الوحدة"></textarea>
+        </div>
+    </div>
+</div>
+
+                <div class="form-group">
+                    <label class="form-label">ملاحظات</label>
+                    <textarea class="form-textarea" id="editClientNotes" placeholder="أي ملاحظات إضافية..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editClientModal')">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        حفظ التغييرات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Follow-up Modal -->
+    <div class="modal" id="followupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">إضافة متابعة</h3>
+                <button class="modal-close" onclick="closeModal('followupModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="followupForm">
+                <input type="hidden" id="followupClientId">
+                <div class="form-group">
+                    <label class="form-label">نوع المتابعة</label>
+                    <select class="form-select" id="followupType" required>
+                        <option value="call">مكالمة هاتفية</option>
+                        <option value="meeting">اجتماع</option>
+                        <option value="viewing">معاينة</option>
+                        <option value="whatsapp">رسالة واتساب</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">التاريخ</label>
+                    <input type="date" class="form-input" id="followupDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الوقت</label>
+                    <input type="time" class="form-input" id="followupTime" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ملاحظات</label>
+                    <textarea class="form-textarea" id="followupNotes" placeholder="تفاصيل المتابعة..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; font-weight: 500;">
+                        <input type="checkbox" id="followupReminder" checked style="width: 18px; height: 18px;">
+                        <span>تفعيل التذكير</span>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('followupModal')">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        حفظ المتابعة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Viewing Modal -->
+    <div class="modal" id="viewingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">حجز معاينة</h3>
+                <button class="modal-close" onclick="closeModal('viewingModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="viewingForm">
+                <input type="hidden" id="viewingClientId">
+                <div class="form-group">
+                    <label class="form-label">تاريخ المعاينة</label>
+                    <input type="date" class="form-input" id="viewingDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">وقت المعاينة</label>
+                    <input type="time" class="form-input" id="viewingTime" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">موقع المعاينة</label>
+                    <input type="text" class="form-input" id="viewingLocation" placeholder="عنوان الوحدة أو مكان اللقاء" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">نوع المعاينة</label>
+                    <select class="form-select" id="viewingType" required>
+                        <option value="property">معاينة وحدة</option>
+                        <option value="meeting">لقاء تعارف</option>
+                        <option value="consultation">استشارة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ملاحظات إضافية</label>
+                    <textarea class="form-textarea" id="viewingNotes" placeholder="أي تفاصيل مهمة للمعاينة..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; font-weight: 500;">
+                        <input type="checkbox" id="viewingReminder" checked style="width: 18px; height: 18px;">
+                        <span>تذكير قبل المعاينة بساعة</span>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('viewingModal')">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-calendar-check"></i>
+                        حجز المعاينة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Change Status Modal -->
+    <div class="modal" id="statusModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">تغيير حالة العميل</h3>
+                <button class="modal-close" onclick="closeModal('statusModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="statusForm">
+                <input type="hidden" id="statusClientId">
+                <div class="form-group">
+                    <label class="form-label">الحالة الجديدة</label>
+                    <select class="form-select" id="newClientStatus" required onchange="toggleCommissionField()">
+                        <option value="interested">مهتم</option>
+                        <option value="serious">جاد</option>
+                        <option value="not-interested">غير مهتم</option>
+                        <option value="pending">معلق</option>
+                        <option value="booked">تم الحجز</option>
+                        <option value="paid">تم الدفع</option>
+                    </select>
+                </div>
+                <div class="form-group" id="commissionField" style="display: none;">
+                    <label class="form-label">العمولة (اختياري)</label>
+                    <input type="text" class="form-input" id="commissionAmount" placeholder="أدخل مبلغ العمولة..." oninput="formatNumberInput(this)">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('statusModal')">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        تحديث الحالة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div class="modal" id="searchModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">البحث المتقدم</h3>
+                <button class="modal-close" onclick="closeModal('searchModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="searchForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">البحث بالميزانية</label>
+                        <input type="text" class="form-input" id="searchBudgetFilter" placeholder="أدخل الميزانية أو جزء منها..." oninput="formatAndConvertNumberInput(this)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">البحث بالمنطقة</label>
+                        <input type="text" class="form-input" id="searchLocationFilter" placeholder="أدخل اسم المنطقة أو جزء منها...">
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="resetSearchForm()">
+                        <i class="fas fa-undo"></i>
+                        إعادة تعيين
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                        بحث
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Followup Modal -->
+    <div class="modal" id="editFollowupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">تعديل المتابعة</h3>
+                <button class="modal-close" onclick="closeModal('editFollowupModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="editFollowupForm">
+                <input type="hidden" id="editFollowupClientId">
+                <input type="hidden" id="editFollowupId">
+                <div class="form-group">
+                    <label class="form-label">نوع المتابعة</label>
+                    <select class="form-select" id="editFollowupType" required>
+                        <option value="call">مكالمة هاتفية</option>
+                        <option value="meeting">اجتماع</option>
+                        <option value="viewing">معاينة</option>
+                        <option value="whatsapp">رسالة واتساب</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">التاريخ</label>
+                    <input type="date" class="form-input" id="editFollowupDate" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الوقت</label>
+                    <input type="time" class="form-input" id="editFollowupTime" required>
+                </div>
+                <div class="form-group" id="editFollowupLocationGroup" style="display: none;">
+                    <label class="form-label">الموقع</label>
+                    <input type="text" class="form-input" id="editFollowupLocation" placeholder="موقع المعاينة أو اللقاء">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ملاحظات</label>
+                    <textarea class="form-textarea" id="editFollowupNotes" placeholder="تفاصيل المتابعة..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; font-weight: 500;">
+                        <input type="checkbox" id="editFollowupReminder" style="width: 18px; height: 18px;">
+                        <span>تفعيل التذكير</span>
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editFollowupModal')">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        حفظ التغييرات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+<div class="modal" id="confirmModal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header" style="border-bottom: none; padding-bottom: 0;">
+            <h3 class="modal-title" id="confirmModalTitle">
+                </h3>
+            <button class="modal-close" onclick="closeModal('confirmModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div style="padding: 16px 24px 24px;">
+            <p id="confirmModalBody" style="color: var(--gray-600); font-size: 0.9rem; margin-bottom: 24px; line-height: 1.6;">
+                </p>
+            <div class="form-actions" style="border-top: none; padding-top: 0; margin-top: 0;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('confirmModal')">
+                    إلغاء
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmModalConfirmBtn">
+                    </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="holdReminderModal">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3 class="modal-title">إيقاف التذكير مؤقتًا</h3>
+            <button class="modal-close" onclick="closeModal('holdReminderModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="holdForm">
+            <div style="padding: 16px 24px 24px;">
+                <p style="color: var(--gray-600); font-size: 0.9rem; margin-bottom: 20px;">
+                    اختر التاريخ الذي تريد إيقاف التذكيرات حتى نهايته.
+                </p>
+                <div class="form-group">
+                    <label class="form-label">تاريخ الإيقاف</label>
+                    <input type="date" class="form-input" id="holdUntilDate" required>
+                </div>
+                <div class="form-actions" style="border-top: none; padding-top: 0; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('holdReminderModal')">
+                        إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        حفظ
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="modal" id="brokerModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">إضافة/تعديل تعاون</h3>
+            <button class="modal-close" onclick="closeModal('brokerModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="brokerForm">
+            <div class="form-group">
+                <label class="form-label">اسم الوسيط/الشركة <span class="required">*</span></label>
+                <input type="text" class="form-input" id="brokerName" required placeholder="اسم الوسيط المتعاون">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">أرقام هواتف الوسيط <span class="required">*</span></label>
+                <div id="brokerPhoneNumbers">
+                    </div>
+                <button type="button" class="btn btn-secondary btn-sm" onclick="addBrokerPhoneInput()" style="margin-top: 12px;">
+                    <i class="fas fa-plus"></i> إضافة رقم آخر
+                </button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">تقرير التعاون</label>
+                <textarea class="form-textarea" id="brokerReport" rows="4" placeholder="اكتب تفاصيل الاتفاق، الوحدة المعروضة، نسبة العمولة، إلخ..."></textarea>
+            </div>
+
+<div class="form-actions">
+    <button type="button" class="btn btn-secondary" onclick="closeModal('brokerModal')">إلغاء</button>
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> حفظ
+    </button>
+</div>
+        </form>
+    </div>
+</div>
+<div class="modal" id="calendarModal">
+    <div class="modal-content" style="max-width: 400px; height: auto;">
+        <div class="modal-header">
+            <h3 class="modal-title">التقويم</h3>
+            <button class="modal-close" onclick="closeModal('calendarModal')">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="calendar-container" style="padding: 16px;">
+            <div class="calendar-controls">
+                <button class="btn btn-secondary btn-sm" onclick="changeMonth(-1)"><i class="fas fa-arrow-right"></i></button>
+                <h4 class="calendar-title" id="calendarMonthYear"></h4>
+                <button class="btn btn-secondary btn-sm" onclick="changeMonth(1)"><i class="fas fa-arrow-left"></i></button>
+            </div>
+            <div class="calendar-weekdays">
+                <div>أحد</div>
+                <div>اثنين</div>
+                <div>ثلاثاء</div>
+                <div>أربعاء</div>
+                <div>خميس</div>
+                <div>جمعة</div>
+                <div>سبت</div>
+            </div>
+            <div id="calendar-days" class="calendar-days">
+                </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معرض صور الوحدة العقارية</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ==================================== */
+        /* تصميم الصفحة الأساسي */
+        /* ==================================== */
+        body { 
+            margin: 0; 
+            padding: 0; 
+            background: #000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            font-family: 'Cairo', sans-serif; 
+            color: #fff; 
+            overflow: hidden; /* لمنع شريط التمرير */
+        }
+        
+        /* ==================================== */
+        /* تصميم التحميل والخطأ */
+        /* ==================================== */
+        .loading-state { 
+            text-align: center; 
+            font-size: 1.5rem; 
+            padding: 20px;
+            color: #ccc;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .loading-state.show {
+            opacity: 1;
+        }
+
+        /* سبينر احترافي */
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top: 4px solid #6366f1; /* لون أزرق جذاب */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ==================================== */
+        /* تصميم Swiper */
+        /* ==================================== */
+        .swiper { 
+            width: 100%; 
+            height: 100vh; 
+            background: #000;
+        }
+        .swiper-slide { 
+            background-color: #000; 
+            text-align: center; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .swiper-slide img { 
+            display: block; 
+            width: 100%; /* استخدام العرض الكامل */
+            max-height: 100vh; 
+            object-fit: contain; /* لاقتصاص الصورة لتناسب الشاشة دون تشويه */
+        }
+
+        /* تخصيص مؤشرات الترقيم (النقاط) */
+        .swiper-pagination-bullet {
+            background: #fff;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+        .swiper-pagination-bullet-active {
+            background: #6366f1; /* لون مميز للصورة النشطة */
+            opacity: 1;
+        }
+        .swiper-button-next, .swiper-button-prev {
+            color: #fff;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 20px 10px;
+            border-radius: 4px;
+        }
+        .swiper-button-next:hover, .swiper-button-prev:hover {
+             opacity: 1;
+        }
+
+        /* ==================================== */
+        /* علامة تجارية بسيطة في الأسفل */
+        /* ==================================== */
+        .branding-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 100;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="loading-state show" id="loadingState">
+        <div class="spinner"></div>
+        جاري تحميل معرض صور الوحدة...
+    </div>
+
+    <div class="swiper" id="unitGallery" style="display: none;">
+        <div class="swiper-wrapper" id="swiperWrapper">
+            </div>
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+    
+    <div class="branding-footer">
+        برعاية نظام CRM-NRE | الصور مقدمة من ImgBB
+    </div>
+
+    <script>
+        // ⚠️ يجب استخدام مفاتيح Supabase نفسها الموجودة في ملف app.js
+        const SUPABASE_URL = 'https://vkzhkvwdmayzrknuxrlw.supabase.co'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZremhrdndkbWF5enJrbnV4cmx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4MzMxMTEsImV4cCI6MjA3MDQwOTExMX0.QvXV5kB6OaOFM6R_PnFj8_yQ7EA58sSaBHFQeITuSsk';
+
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const loadingState = document.getElementById('loadingState');
+        const galleryContainer = document.getElementById('unitGallery');
+        const swiperWrapper = document.getElementById('swiperWrapper');
+
+        async function loadGallery() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const clientId = urlParams.get('id'); 
+
+            if (!clientId) {
+                loadingState.innerHTML = 'خطأ: لم يتم تحديد معرف الوحدة العقارية.';
+                return;
+            }
+
+            const { data: client, error } = await supabaseClient
+                .from('clients')
+                .select('sellerData')
+                .eq('id', clientId)
+                .single();
+
+            if (error || !client || !client.sellerData || !client.sellerData.unit_photos || client.sellerData.unit_photos.length === 0) {
+                loadingState.innerHTML = 'عفواً، لا توجد صور حالياً لهذه الوحدة أو حدث خطأ في التحميل.';
+                return;
+            }
+
+            const photos = client.sellerData.unit_photos;
+
+            // 1. إضافة الصور إلى الـ Swiper
+            photos.forEach((url, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'swiper-slide';
+                // استخدام lazy loading لتحسين الأداء (تحميل الصور عند الحاجة فقط)
+                slide.innerHTML = `<img data-src="${url}" alt="وحدة عقارية #${index + 1}" class="swiper-lazy">
+                                   <div class="swiper-lazy-preloader swiper-lazy-preloader-white"></div>`;
+                swiperWrapper.appendChild(slide);
+            });
+
+            // 2. إخفاء حالة التحميل وإظهار المعرض
+            loadingState.classList.remove('show');
+            setTimeout(() => {
+                loadingState.style.display = 'none';
+                galleryContainer.style.display = 'block';
+
+                 // 3. تفعيل الـ Swiper (للتقليب يمين ويسار)
+                new Swiper('#unitGallery', {
+                    // إعدادات احترافية إضافية:
+                    speed: 500, // سرعة الانتقال
+                    effect: 'slide', // تأثير التمرير
+                    loop: true, // العرض بشكل دائري
+                    lazy: { // تفعيل التحميل الكسول
+                        loadPrevNext: true,
+                    },
+                    keyboard: { // تفعيل التحكم بلوحة المفاتيح
+                        enabled: true,
+                    },
+                    // التحكم باللمس والتقليب
+                    grabCursor: true, 
+
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
+                });
+
+            }, 500); // إعطاء وقت لتأثير الإخفاء
+        }
+
+        document.addEventListener('DOMContentLoaded', loadGallery);
+    </script>
+</body>
+</html>
+    
+  </body>
+  
+</html>

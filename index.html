@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <title>مرحبًا بك في CRM-NRE</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --white: #ffffff;
+            --dark: #0f172a;
+            --text-color: #e2e8f0;
+            --gray-200: #e5e7eb;
+            --gray-500: #6b7280;
+            --gray-700: #4b5563;
+            --gray-800: #1f2937;
+            --danger: #ef4444;
+            --success: #10b981;
+            --transition-fast: all 0.3s ease;
+            --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            height: 100%;
+            font-family: 'Cairo', sans-serif;
+            overflow: hidden;
+        }
+
+        .app-container {
+            height: 100%; width: 100%; display: flex; flex-direction: column;
+            justify-content: space-between; position: relative;
+            background-image: url('./assets/welcome-bg.jpg'); background-size: cover; background-position: center;
+            -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;
+        }
+        .app-container::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, rgba(15, 23, 42, 1) 5%, rgba(15, 23, 42, 0.4) 100%); z-index: 1;
+        }
+
+        .main-content-wrapper {
+            position: relative; z-index: 2; width: 90%; max-width: 600px; margin: 0 auto;
+            padding: 24px; padding-top: 5vh; display: flex; flex-direction: column;
+            align-items: center; text-align: center; color: var(--text-color);
+            opacity: 0; transform: translateY(-20px); animation: fadeInDown 0.8s 0.2s forwards;
+        }
+
+        .logo-container { margin-bottom: 5px; }
+        .logo { max-width: 165px; height: auto; opacity: 0.9; }
+
+        .welcome-title {
+            font-size: 2.2rem; white-space: nowrap; font-weight: 700; font-family: 'Cairo', sans-serif;
+            margin-bottom: 1rem; text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+        }
+        .welcome-subtitle { font-size: clamp(1rem, 2.5vw, 1.25rem); font-weight: 400; margin-bottom: 2rem; line-height: 1.6; }
+        .features-container { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+        .feature-item { display: flex; flex-direction: column; align-items: center; gap: 8px; opacity: 0.9; }
+        .feature-item i { font-size: 1.5rem; margin-bottom: 4px; }
+        .feature-item span { font-size: 0.85rem; font-weight: 600; }
+
+        /* --- START: التعديلات الجديدة للوحة تسجيل الدخول --- */
+        .login-panel {
+            background: var(--white); border-top-left-radius: 24px; border-top-right-radius: 24px;
+            /* تم تقليل الحشو الرأسي */
+            padding: 16px 32px 24px 32px; 
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.2); position: relative;
+            z-index: 3; transform: translateY(100%); animation: slideUp 0.8s 0.5s forwards cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .form-content { display: none; opacity: 0; animation: fadeIn 0.6s 0.3s forwards; }
+        
+        /* تم تصغير حجم الخط والهامش للعنوان */
+        .form-content h2 { 
+            font-size: 1.6rem; 
+            font-weight: 700; 
+            color: var(--gray-800); 
+            margin-bottom: 16px; 
+            text-align: right; 
+        }
+        
+        /* تم تقليل الهامش السفلي للحقول */
+        .form-group { 
+            position: relative; 
+            margin-bottom: 16px; 
+        }
+        
+        /* تم تصغير حجم الخط والحشو لحقول الإدخال */
+        .form-input { 
+            width: 100%; 
+            padding: 10px 0; 
+            border: none; 
+            border-bottom: 2px solid var(--gray-200); 
+            font-size: 1rem; 
+            color: var(--gray-800); 
+            background: transparent; 
+            transition: var(--transition-fast); 
+            font-family: inherit; 
+        }
+
+        /* تم تصغير حجم الزر وحجم الخط */
+        .btn { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: var(--transition-fast); 
+            font-size: 1rem; 
+            font-family: inherit; 
+        }
+
+        /* تم تصغير حجم خط الشروط والأحكام */
+        .terms-agreement {
+            font-size: 0.8rem;
+        }
+        /* --- END: نهاية التعديلات --- */
+
+        .form-input:focus { outline: none; border-bottom-color: var(--primary); }
+        .form-input::placeholder { color: var(--gray-500); }
+        .password-toggle-icon { position: absolute; top: 50%; left: 0; transform: translateY(-50%); color: var(--gray-500); cursor: pointer; }
+        
+        .btn-primary { background: var(--primary); color: var(--white); }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-primary:disabled { background: #9ca3af; cursor: not-allowed; }
+        .loader-spinner-btn { border: 3px solid rgba(255,255,255,0.5); border-top: 3px solid var(--white); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
+
+        #initialLoader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: var(--dark); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .loader-spinner { border: 6px solid var(--primary-light); border-top: 6px solid var(--white); border-radius: 50%; width: 50px; height: 50px; animation: spin 1.5s linear infinite; }
+
+        .toast-notification {
+            position: fixed; top: 24px; left: 50%;
+            background-color: var(--white); color: var(--gray-700);
+            padding: 16px; border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+            z-index: 10000; display: flex; align-items: center; gap: 12px;
+            border-right: 5px solid; transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            min-width: 320px; transform: translate(-50%, -100px);
+            opacity: 0; visibility: hidden;
+        }
+        .toast-notification.show { transform: translate(-50%, 0); opacity: 1; visibility: visible; }
+        .toast-icon { font-size: 1.5rem; }
+        .toast-message { font-weight: 600; white-space: nowrap; }
+        .toast-notification.error { border-right-color: var(--danger); }
+        .toast-notification.error .toast-icon { color: var(--danger); }
+        .toast-notification.success { border-right-color: var(--success); }
+        .toast-notification.success .toast-icon { color: var(--success); }
+
+        @keyframes slideUp { to { transform: translateY(0); } }
+        @keyframes fadeInDown { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .terms-agreement {
+            display: flex; align-items: flex-start;
+            gap: 10px; color: var(--gray-700);
+            text-align: right;
+        }
+        .terms-agreement input[type="checkbox"] {
+            width: 16px; height: 16px; margin-top: 4px;
+            flex-shrink: 0;
+        }
+        .terms-agreement label { line-height: 1.6; }
+        .terms-agreement a {
+            color: var(--primary); text-decoration: none;
+            font-weight: 600;
+        }
+        .terms-agreement a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <div id="initialLoader"><div class="loader-spinner"></div></div>
+
+    <div class="app-container" style="display: none;">
+        <div class="main-content-wrapper">
+            <div class="logo-container">
+                <img src="./assets/images/logo2.png" alt="شعار CRM-NRE" class="logo">
+            </div>
+            <h1 class="welcome-title">أهلاً بك في CRM-NRE</h1>
+            <p class="welcome-subtitle">نظامك المتكامل لإدارة علاقات العملاء</p>
+            <div class="features-container">
+                <div class="feature-item"><i class="fas fa-users"></i><span>إدارة العملاء</span></div>
+                <div class="feature-item"><i class="fas fa-calendar-check"></i><span>تتبع المتابعات</span></div>
+                <div class="feature-item"><i class="fas fa-chart-line"></i><span>زيادة المبيعات</span></div>
+            </div>
+        </div>
+        <div class="login-panel" id="loginPanel">
+            <button class="btn btn-primary" id="startLoginBtn">تسجيل الدخول</button>
+            <div class="form-content" id="formContent">
+                <h2>أدخل بياناتك</h2>
+                <form id="loginForm">
+                    <div class="form-group"><input type="email" id="loginEmail" class="form-input" placeholder="البريد الإلكتروني" required></div>
+                    <div class="form-group"><input type="password" id="loginPassword" class="form-input" placeholder="كلمة المرور" required><i id="passwordToggle" class="fas fa-eye-slash password-toggle-icon"></i></div>
+                    <div class="form-group terms-agreement">
+                        <input type="checkbox" id="agreeTerms" name="terms" required>
+                        <label for="agreeTerms">
+                            أقر بأنني قرأت وأوافق على <a href="legal.html" target="_blank">الشروط والأحكام</a>.
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="loginButton"><span id="btnText">تأكيد الدخول</span></button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastNotification" class="toast-notification">
+        <i id="toastIcon" class="toast-icon"></i>
+        <span id="toastMessage" class="toast-message"></span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = 'https://vkzhkvwdmayzrknuxrlw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZremhrdndkbWF5enJrbnV4cmx3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4MzMxMTEsImV4cCI6MjA3MDQwOTExMX0.QvXV5kB6OaOFM6R_PnFj8_yQ7EA58sSaBHFQeITuSsk';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const initialLoader = document.getElementById('initialLoader');
+        const appContainer = document.querySelector('.app-container');
+        const startLoginBtn = document.getElementById('startLoginBtn');
+        const formContent = document.getElementById('formContent');
+        const loginForm = document.getElementById('loginForm');
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginButton = document.getElementById('loginButton');
+        const btnText = document.getElementById('btnText');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const toastNotification = document.getElementById('toastNotification');
+        const toastIcon = document.getElementById('toastIcon');
+        const toastMessage = document.getElementById('toastMessage');
+
+        let toastTimeout;
+        function showToast(message, type = 'error') {
+            clearTimeout(toastTimeout);
+            toastMessage.textContent = message;
+
+            toastNotification.className = 'toast-notification';
+            let iconClass = type === 'success' ? 'fas fa-check-circle' : 'fas fa-times-circle';
+            toastIcon.className = `toast-icon ${iconClass}`;
+            toastNotification.classList.add(type);
+
+            toastNotification.classList.add('show');
+
+            toastTimeout = setTimeout(() => {
+                toastNotification.classList.remove('show');
+            }, 3000);
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    window.location.replace('dashboard.html');
+                } else {
+                    initialLoader.style.display = 'none';
+                    appContainer.style.display = 'flex';
+                }
+            } catch (error) {
+                console.error('Error checking session:', error);
+                initialLoader.style.display = 'none';
+                appContainer.style.display = 'flex';
+            }
+        });
+
+        startLoginBtn.addEventListener('click', () => {
+            startLoginBtn.style.display = 'none';
+            formContent.style.display = 'block';
+        });
+
+        passwordToggle.addEventListener('click', () => {
+            const isPassword = loginPassword.type === 'password';
+            loginPassword.type = isPassword ? 'text' : 'password';
+            passwordToggle.classList.toggle('fa-eye', !isPassword);
+            passwordToggle.classList.toggle('fa-eye-slash', isPassword);
+        });
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loginButton.disabled = true;
+            btnText.innerHTML = '<div class="loader-spinner-btn"></div>';
+
+            try {
+                const { data: { user }, error } = await supabaseClient.auth.signInWithPassword({
+                    email: loginEmail.value,
+                    password: loginPassword.value,
+                });
+
+                if (error) throw error;
+
+                const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+                
+                const { error: sessionError } = await supabaseClient
+                    .from('active_sessions')
+                    .upsert({ user_id: user.id, session_id: newSessionId });
+
+                if (sessionError) {
+                    await supabaseClient.auth.signOut();
+                    throw new Error('Failed to create a secure session.');
+                }
+                
+                localStorage.setItem('active_session_id', newSessionId);
+
+                window.location.replace('dashboard.html');
+
+            } catch (error) {
+                const errorMessage = error.message.includes('Invalid login credentials')
+                    ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'
+                    : 'حدث خطأ ما، يرجى المحاولة مرة أخرى.';
+                showToast(errorMessage, 'error');
+
+                loginButton.disabled = false;
+                btnText.textContent = 'تأكيد الدخول';
+            }
+        });
+    </script>
+</body>
+</html>
